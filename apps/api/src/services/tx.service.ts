@@ -21,7 +21,7 @@ export async function encryptTx(partyId: string, payload: any): Promise<TxSecure
 
   const MASTER_KEY = Buffer.from(masterKeyHex, "hex");
 
-  const id = randomUUID().slice(0, 8);
+  const id = randomUUID();
   const dek = randomBytes(32);
 
   const { nonce, ciphertext, tag } = encryptPayload(dek, payload);

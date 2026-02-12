@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 export default function Home() {
-  const [partyId, setPartyId] = useState("");
+  const [partyId, setPartyId] = useState("party_123"); // default value
   const [payloadText, setPayloadText] = useState(
     `{
   "amount": 100,
@@ -14,6 +14,7 @@ export default function Home() {
   const [encrypted, setEncrypted] = useState<any>(null);
   const [decrypted, setDecrypted] = useState<any>(null);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const API_URL = "http://localhost:3001";
 
@@ -21,17 +22,15 @@ export default function Home() {
     setError("");
     setEncrypted(null);
     setDecrypted(null);
+    setLoading(true);
 
     try {
-      // ✅ Party ID validation
       if (!partyId.trim()) {
         throw new Error("Party ID cannot be empty.");
       }
 
-      // ✅ Parse payload
       const payload = JSON.parse(payloadText);
 
-      // ✅ Payload validation
       if (typeof payload.amount !== "number") {
         throw new Error("Amount must be a number.");
       }
@@ -56,11 +55,14 @@ export default function Home() {
       setTxId(data.id);
     } catch (err: any) {
       setError(err.message);
+    } finally {
+      setLoading(false);
     }
   }
 
   async function handleFetch() {
     setError("");
+    setLoading(true);
 
     try {
       if (!txId.trim()) {
@@ -75,11 +77,14 @@ export default function Home() {
       setDecrypted(null);
     } catch (err: any) {
       setError(err.message);
+    } finally {
+      setLoading(false);
     }
   }
 
   async function handleDecrypt() {
     setError("");
+    setLoading(true);
 
     try {
       if (!txId.trim()) {
@@ -94,6 +99,8 @@ export default function Home() {
       setEncrypted(null);
     } catch (err: any) {
       setError(err.message);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -132,7 +139,6 @@ export default function Home() {
             value={partyId}
             onChange={(e) => setPartyId(e.target.value)}
             className="mt-1 w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="party_123"
           />
         </div>
 
@@ -151,23 +157,26 @@ export default function Home() {
         <div className="flex gap-4 flex-wrap">
           <button
             onClick={handleEncrypt}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+            disabled={loading}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
           >
-            Encrypt & Save
+            {loading ? "Processing..." : "Encrypt & Save"}
           </button>
 
           <button
             onClick={handleFetch}
-            className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700"
+            disabled={loading}
+            className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 disabled:opacity-50"
           >
-            Fetch
+            {loading ? "Processing..." : "Fetch"}
           </button>
 
           <button
             onClick={handleDecrypt}
-            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+            disabled={loading}
+            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50"
           >
-            Decrypt
+            {loading ? "Processing..." : "Decrypt"}
           </button>
         </div>
 
