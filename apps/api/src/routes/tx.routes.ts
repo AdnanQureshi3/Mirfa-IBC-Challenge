@@ -1,5 +1,5 @@
 import { FastifyPluginAsync } from "fastify";
-import { encryptTx, getTx , decryptTx} from "../services/tx.service";
+import { encryptTx, getTx , decryptTx} from "../services/tx.service.js";
 
 const txRoutes: FastifyPluginAsync = async (app) => {
   app.post("/tx/encrypt", async (request) => {

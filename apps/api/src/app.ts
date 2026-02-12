@@ -1,5 +1,5 @@
 import Fastify from "fastify";
-import txRoutes from "./routes/tx.routes";
+import txRoutes from "./routes/tx.routes.js";
 import cors from "@fastify/cors";
 export function buildApp() {
   const app = Fastify({

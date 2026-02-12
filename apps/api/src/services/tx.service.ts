@@ -7,8 +7,8 @@ import {
 } from "@mirfa/crypto";
 import dotenv from "dotenv";
 dotenv.config();
-import { TxSecureRecord } from "../types/tx.types";
-import { insertTx, findTxById } from "../db/storage";
+import { TxSecureRecord } from "../types/tx.types.js";
+import { insertTx, findTxById } from "../db/storage.js";
 // const store = new Map<string, TxSecureRecord>();
 
 function isValidHex(str: string) {

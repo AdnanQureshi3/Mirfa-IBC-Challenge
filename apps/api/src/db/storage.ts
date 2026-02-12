@@ -1,7 +1,7 @@
-import { db } from "./client"
-import { txSecureRecords } from "./schema"
+import { db } from "./client.js"
+import { txSecureRecords } from "./schema.js"
 import { eq } from "drizzle-orm"
-import { TxSecureRecord } from "../types/tx.types"
+import { TxSecureRecord } from "../types/tx.types.js"
 
 export async function insertTx(record: TxSecureRecord) {
   await db.insert(txSecureRecords).values({

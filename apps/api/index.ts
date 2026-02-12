@@ -1,3 +1,5 @@
+import "dotenv/config";
+
 import { buildApp } from "./src/app";
 
 const app = buildApp();

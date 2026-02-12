@@ -4,7 +4,7 @@ import {
   decryptPayload,
   wrapKey,
   unwrapKey
-} from "../index";
+} from "../index.js";
 
 import { randomBytes } from "crypto";
 
