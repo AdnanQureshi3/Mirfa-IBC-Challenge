@@ -1,8 +1,0 @@
-{
-  "functions": {
-    "apps/api/dist/index.js": {
-      "memory": 1024,
-      "maxDuration": 10
-    }
-  }
-}
