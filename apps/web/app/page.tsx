@@ -19,10 +19,29 @@ export default function Home() {
 
   async function handleEncrypt() {
     setError("");
+    setEncrypted(null);
     setDecrypted(null);
 
     try {
+      // ✅ Party ID validation
+      if (!partyId.trim()) {
+        throw new Error("Party ID cannot be empty.");
+      }
+
+      // ✅ Parse payload
       const payload = JSON.parse(payloadText);
+
+      // ✅ Payload validation
+      if (typeof payload.amount !== "number") {
+        throw new Error("Amount must be a number.");
+      }
+
+      if (
+        typeof payload.currency !== "string" ||
+        !payload.currency.trim()
+      ) {
+        throw new Error("Currency must be a non-empty string.");
+      }
 
       const res = await fetch(`${API_URL}/tx/encrypt`, {
         method: "POST",
@@ -42,11 +61,18 @@ export default function Home() {
 
   async function handleFetch() {
     setError("");
+
     try {
+      if (!txId.trim()) {
+        throw new Error("Transaction ID cannot be empty.");
+      }
+
       const res = await fetch(`${API_URL}/tx/${txId}`);
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Fetch failed");
+
       setEncrypted(data);
+      setDecrypted(null);
     } catch (err: any) {
       setError(err.message);
     }
@@ -54,114 +80,144 @@ export default function Home() {
 
   async function handleDecrypt() {
     setError("");
+
     try {
+      if (!txId.trim()) {
+        throw new Error("Transaction ID cannot be empty.");
+      }
+
       const res = await fetch(`${API_URL}/tx/${txId}/decrypt`);
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Decrypt failed");
+
       setDecrypted(data);
+      setEncrypted(null);
     } catch (err: any) {
       setError(err.message);
     }
   }
 
+  function handleDownload() {
+    if (!encrypted) return;
+
+    const blob = new Blob(
+      [JSON.stringify(encrypted, null, 2)],
+      { type: "text/plain;charset=utf-8;" }
+    );
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `encrypted_${encrypted.id}.txt`;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
   return (
     <div className="min-h-screen bg-gray-100 p-8">
-      <h1 className="text-3xl font-bold text-center mb-8">
-        Secure Transaction Demo
-      </h1>
+      <div className="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl p-8 space-y-6">
+        <h1 className="text-3xl font-bold text-gray-800">
+          Secure Transactions Demo
+        </h1>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-7xl mx-auto">
-
-        {/* LEFT SIDE */}
-        <div className="bg-white shadow-lg rounded-xl p-6 space-y-6">
-
-          <div>
-            <label className="block text-sm font-medium text-gray-600">
-              Party ID
-            </label>
-            <input
-              value={partyId}
-              onChange={(e) => setPartyId(e.target.value)}
-              className="mt-1 w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-600">
-              Payload (JSON)
-            </label>
-            <textarea
-              rows={10}
-              value={payloadText}
-              onChange={(e) => setPayloadText(e.target.value)}
-              className="mt-1 w-full border rounded-lg px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-600">
-              Transaction ID
-            </label>
-            <input
-              value={txId}
-              onChange={(e) => setTxId(e.target.value)}
-              className="mt-1 w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div className="flex flex-wrap gap-4">
-            <button
-              onClick={handleEncrypt}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-            >
-              Encrypt & Save
-            </button>
-
-            <button
-              onClick={handleFetch}
-              className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700"
-            >
-              Fetch
-            </button>
-
-            <button
-              onClick={handleDecrypt}
-              className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
-            >
-              Decrypt
-            </button>
-          </div>
-
-          {error && (
-            <div className="bg-red-100 text-red-700 p-3 rounded-lg">
-              {error}
-            </div>
-          )}
+        <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 p-3 rounded-lg text-sm">
+          ⚠️ Remember your Transaction ID. You will need it to fetch or decrypt the record later.
         </div>
 
-        {/* RIGHT SIDE */}
-        <div className="space-y-6">
-
-          {encrypted && (
-            <div className="bg-white shadow-lg rounded-xl p-6">
-              <h3 className="font-semibold mb-2">Encrypted Record</h3>
-              <pre className="bg-gray-900 text-green-400 p-4 rounded-lg text-sm overflow-x-auto max-h-[300px] overflow-y-auto">
-                {JSON.stringify(encrypted, null, 2)}
-              </pre>
-            </div>
-          )}
-
-          {decrypted && (
-            <div className="bg-white shadow-lg rounded-xl p-6">
-              <h3 className="font-semibold mb-2">Decrypted Payload</h3>
-              <pre className="bg-gray-900 text-blue-400 p-4 rounded-lg text-sm overflow-x-auto">
-                {JSON.stringify(decrypted, null, 2)}
-              </pre>
-            </div>
-          )}
-
+        <div>
+          <label className="block text-sm font-medium text-gray-600">
+            Party ID
+          </label>
+          <input
+            value={partyId}
+            onChange={(e) => setPartyId(e.target.value)}
+            className="mt-1 w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="party_123"
+          />
         </div>
 
+        <div>
+          <label className="block text-sm font-medium text-gray-600">
+            Payload (JSON)
+          </label>
+          <textarea
+            rows={8}
+            value={payloadText}
+            onChange={(e) => setPayloadText(e.target.value)}
+            className="mt-1 w-full border rounded-lg px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div className="flex gap-4 flex-wrap">
+          <button
+            onClick={handleEncrypt}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+          >
+            Encrypt & Save
+          </button>
+
+          <button
+            onClick={handleFetch}
+            className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700"
+          >
+            Fetch
+          </button>
+
+          <button
+            onClick={handleDecrypt}
+            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+          >
+            Decrypt
+          </button>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-600">
+            Transaction ID
+          </label>
+          <input
+            value={txId}
+            onChange={(e) => setTxId(e.target.value)}
+            className="mt-1 w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        {error && (
+          <div className="bg-red-100 text-red-700 p-3 rounded-lg">
+            {error}
+          </div>
+        )}
+
+        {encrypted && (
+          <div>
+            <div className="flex justify-between items-center">
+              <h3 className="text-lg font-semibold text-gray-700">
+                Encrypted Record
+              </h3>
+              <button
+                onClick={handleDownload}
+                className="text-sm border px-3 py-1 rounded hover:bg-gray-100"
+              >
+                Download .txt
+              </button>
+            </div>
+
+            <pre className="mt-2 bg-gray-900 text-green-400 p-4 rounded-lg text-sm overflow-x-auto">
+              {JSON.stringify(encrypted, null, 2)}
+            </pre>
+          </div>
+        )}
+
+        {decrypted && (
+          <div>
+            <h3 className="text-lg font-semibold text-gray-700">
+              Decrypted Payload
+            </h3>
+            <pre className="mt-2 bg-gray-900 text-blue-400 p-4 rounded-lg text-sm overflow-x-auto">
+              {JSON.stringify(decrypted, null, 2)}
+            </pre>
+          </div>
+        )}
       </div>
     </div>
   );
