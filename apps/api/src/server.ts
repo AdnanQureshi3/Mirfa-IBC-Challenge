@@ -1,5 +1,5 @@
-import { buildApp } from "./app";
 import "dotenv/config";
+import { buildApp } from "./app";
 
 
 const start = async () => {

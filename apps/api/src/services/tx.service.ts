@@ -5,21 +5,23 @@ import {
   decryptPayload,
   unwrapKey
 } from "@mirfa/crypto";
+import dotenv from "dotenv";
+dotenv.config();
 import { TxSecureRecord } from "../types/tx.types";
-
-const store = new Map<string, TxSecureRecord>();
+import { insertTx, findTxById } from "../db/storage";
+// const store = new Map<string, TxSecureRecord>();
 
 function isValidHex(str: string) {
   return /^[0-9a-fA-F]+$/.test(str);
 }
 
-export function encryptTx(partyId: string, payload: any): TxSecureRecord {
+export async function encryptTx(partyId: string, payload: any): Promise<TxSecureRecord> {
   const masterKeyHex = process.env.MASTER_KEY;
   if (!masterKeyHex) throw new Error("MASTER_KEY not set");
 
   const MASTER_KEY = Buffer.from(masterKeyHex, "hex");
 
-  const id = randomUUID().slice(0, 4);
+  const id = randomUUID().slice(0, 8);
   const dek = randomBytes(32);
 
   const { nonce, ciphertext, tag } = encryptPayload(dek, payload);
@@ -42,16 +44,20 @@ export function encryptTx(partyId: string, payload: any): TxSecureRecord {
     mk_version: 1
   };
 
-  store.set(id, record);
+  // store.set(id, record);
+  await insertTx(record);
+  
   return record;
 }
 
-export function getTx(id: string) {
-  return store.get(id);
+export async function getTx(id: string) {
+  // return store.get(id);
+  return await findTxById(id);
 }
 
-export function decryptTx(id: string) {
-  const record = store.get(id);
+export async function decryptTx(id: string) {
+  const record = await findTxById(id);
+  // const record = store.get(id);
   if (!record) throw new Error("Record not found");
 
   const masterKeyHex = process.env.MASTER_KEY;
