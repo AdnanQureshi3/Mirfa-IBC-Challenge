@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "apps/api/dist/index.js": {
+      "runtime": "nodejs20.x"
+    }
+  }
+}
