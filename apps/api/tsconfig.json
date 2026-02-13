@@ -5,13 +5,10 @@
     "moduleResolution": "NodeNext",
     "outDir": "dist",
     "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "types": ["node"],
     "baseUrl": ".",
     "paths": {
       "@mirfa/crypto": ["../../packages/crypto/src/index.ts"]
     }
   },
-  "include": ["src", "api"] 
+  "include": ["src", "api"]
 }

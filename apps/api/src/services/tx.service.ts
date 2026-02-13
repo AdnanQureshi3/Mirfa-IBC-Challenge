@@ -4,8 +4,7 @@ import {
   wrapKey,
   decryptPayload,
   unwrapKey
-} from "../../../../packages/crypto/dist/index.js";
-
+} from "@mirfa/crypto";
 import dotenv from "dotenv";
 dotenv.config();
 import { TxSecureRecord } from "../types/tx.types.js";
