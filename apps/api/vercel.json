@@ -1,11 +1,11 @@
 {
   "version": 2,
   "functions": {
-    "src/server.ts": {
+    "index.ts": {
       "includeFiles": "../../packages/crypto/dist/**"
     }
   },
   "rewrites": [
-    { "source": "/(.*)", "destination": "src/server.ts" }
+    { "source": "/(.*)", "destination": "index.ts" }
   ]
 }
