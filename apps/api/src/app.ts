@@ -6,7 +6,7 @@ export function buildApp() {
     logger: true
   });
   app.register(cors, {
-    origin: ["http://localhost:3000", " https://mirfa-ibc-challenge-web-pearl.vercel.app"]
+    origin: ["http://localhost:3000", "https://mirfa-ibc-challenge-web-pearl.vercel.app"]
 
   });
 

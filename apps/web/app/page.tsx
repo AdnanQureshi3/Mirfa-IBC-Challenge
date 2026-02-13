@@ -16,7 +16,7 @@ export default function Home() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const API_URL = "http://localhost:3001";
+const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   async function handleEncrypt() {
     setError("");
