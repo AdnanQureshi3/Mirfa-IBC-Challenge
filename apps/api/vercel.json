@@ -1,14 +1,10 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "src/server.ts",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": "../../packages/crypto/**"
-      }
+  "functions": {
+    "src/server.ts": {
+      "includeFiles": "../../packages/crypto/dist/**"
     }
-  ],
+  },
   "rewrites": [
     { "source": "/(.*)", "destination": "src/server.ts" }
   ]
